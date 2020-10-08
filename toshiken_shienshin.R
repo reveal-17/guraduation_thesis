@@ -109,9 +109,9 @@ print(all_city_code)
 # all_city_code <- as.character(all_city_code)
 
 # for (i in 1:length(all_city_code)) {
-	# if (str_length(all_city_code[i]) < 5) {
-		# all_city_code[i] <- paste0("0", all_city_code[i])
-	# }
+# if (str_length(all_city_code[i]) < 5) {
+# all_city_code[i] <- paste0("0", all_city_code[i])
+# }
 # }
 
 # head(all_city_code)
@@ -130,12 +130,12 @@ match_code <- c()
 
 # データから大都市圏・都市圏の市町村を抽出
 for (i in 1:length(toshiken_num_fix)) {
-	for (j in 1:length(all_city_code)) {
-		if (all_city_code[j] == toshiken_num_fix[i]) {
-			# 一致したコードをリストに追加
-			match_code <- c(match_code, c(all_city_code[j]))		
-		}
-	}
+  for (j in 1:length(all_city_code)) {
+    if (all_city_code[j] == toshiken_num_fix[i]) {
+      # 一致したコードをリストに追加
+      match_code <- c(match_code, c(all_city_code[j]))		
+    }
+  }
 }
 
 # match_code重複なくす673
@@ -151,12 +151,20 @@ match_code_less <- c()
 # 5桁589
 match_code_more <- c()
 for (i in 1:length(match_code)) {
-	if (match_code[i] < 10000) {
-		match_code_less <- c(match_code_less, c(match_code[i]))
-	} else if (match_code[i] >= 10000) {
-		match_code_more <- c(match_code_more, c(match_code[i]))
-	}
+  if (match_code[i] < 10000) {
+    match_code_less <- c(match_code_less, c(match_code[i]))
+    print("hoge")
+  } else if (match_code[i] >= 10000) {
+    match_code_more <- c(match_code_more, c(match_code[i]))
+  }
 }
+
+head(match_code_less)
+length(match_code_less)
+
+head(match_code_more)
+length(match_code_more)
+
 
 # 空のリスト（行番号格納）
 row_num_list <- c()
@@ -169,29 +177,29 @@ row_num_list <- c()
 # うまくいかないので、４桁と５桁のコードそれぞれ変数に格納して区別して操作する
 # city_code=match_codeの条件文にする
 for (i in 1:length(match_code_less)) {
-	for (j in 1:length(data$city_code)) {
-		# ４桁文字数で測る
-		# ここを変える
-		if (match_code_less[i] == data$city_code[j]) {
-			# 行番号取得
-			row_num <- grep(match_code_less[i], data$city_code)
-	　　　　　# リストに格納
-			row_num_list <- c(row_num_list, c(row_num))
-		}	
-	}	
+  for (j in 1:length(data$city_code)) {
+    # ４桁文字数で測る
+    # ここを変える
+    if (match_code_less[i] == data$city_code[j]) {
+      # 行番号取得
+      row_num <- grep(match_code_less[i], data$city_code)
+      # リストに格納
+      row_num_list <- c(row_num_list, c(row_num))
+    }	
+  }	
 }
 
 
 for (i in 1:length(match_code_more)) {
-	for (j in 1:length(data$city_code)) {
-		# 5桁文字数で測る
-		if (match_code_more[i] == data$city_code[j]) {
-			# 行番号取得
-			row_num <- grep(match_code_more[i], data$city_code)
-	　　　　　# リストに格納
-			row_num_list <- c(row_num_list, c(row_num))
-		}	
-	}	
+  for (j in 1:length(data$city_code)) {
+    # 5桁文字数で測る
+    if (match_code_more[i] == data$city_code[j]) {
+      # 行番号取得
+      row_num <- grep(match_code_more[i], data$city_code)
+      # リストに格納
+      row_num_list <- c(row_num_list, c(row_num))
+    }	
+  }	
 }
 
 
@@ -207,26 +215,37 @@ length(row_num_list)
 data_toshiken <- matrix(ncol=18)
 head(data_toshiken)
 
+
+
 # 変数（列名）命名
 colnames(data_toshiken) <- c("year", "prefecture_code", "city_code", "population", "population_over65", "elderly_ratio", "taxable_income", "per_capita_taxable_income", "shienbyo", "shienbyo_ratio", "shienshin", "shienshin_ratio", "nursing_station", "nursing_station_ratio", "home_death", "year2015", "year2016", "year2017")
+
+
+
 
 # 元データの不要列を削除
 head(data)
 data <- data[, -4:-6]
 
+
 # 大都市圏・都市圏の市町村のみのデータにする
 for (i in 1:length(row_num_list)) {
-			# 空のデータセットに一致する行を格納していく
-			slice_data <- slice(data, row_num_list[i])
-			data_toshiken <- rbind(data_toshiken, slice_data)
+  # 空のデータセットに一致する行を格納していく
+  slice_data <- slice(data, row_num_list[i])
+  data_toshiken <- rbind(data_toshiken, slice_data)
+  print("hoge")
 }
+
 
 # 重複はなくさない（パネルデータ）
 
 # 先頭行NA削除
 data_toshiken <- data_toshiken[-1, ]
 head(data_toshiken)
+
 table(data_toshiken$year)
+
+
 
 #　基本統計量表示
 summary(data_toshiken, na.rm = TRUE)
@@ -253,20 +272,20 @@ summary(data_toshiken, na.rm = TRUE)
 length(data_toshiken[,1])
 length(data_toshiken[,3])
 for (i in 4:18) {
-	col_name <- colnames(data_toshiken)[i]
-	object_num <- length(data_toshiken[[i]])
-	print(col_name)
-	print(object_num)
+  col_name <- colnames(data_toshiken)[i]
+  object_num <- length(data_toshiken[[i]])
+  print(col_name)
+  print(object_num)
 }
 
 #　標準偏差
 sd(data_toshiken[,1])
 sd(data_toshiken[,3])
 for (i in 4:18) {
-	col_name <- colnames(data_toshiken)[i]
-	sd <- sd(data_toshiken[[i]])
-	print(col_name)
-	print(sd)
+  col_name <- colnames(data_toshiken)[i]
+  sd <- sd(data_toshiken[[i]])
+  print(col_name)
+  print(sd)
 }
 
 # 被説明変数と説明変数
@@ -290,7 +309,7 @@ round(vif.res)
 # pooledOLS
 # パネルデータと認識させる
 data_refine <- pdata.frame(data_toshiken, index=c("city_code", "year"), drop.index=TRUE)
-result1 = plm(home_death ~ elderly_ratio + per_capita_taxable_income + shienbyo_ratio + shienshin_ratio + nursing_station_ratio + year2015 + year2016 + year2017, data=data_refine, model="pooling")
+result1 = plm(home_death ~ elderly_ratio + per_capita_taxable_income + shienshin_ratio + nursing_station_ratio + year2015 + year2016 + year2017, data=data_refine, model="pooling")
 summary(result1)
 
 #LSDV推定（within推定、固定効果推定）
@@ -302,7 +321,7 @@ pFtest(result2, result1)
 #p値は非常に小さいので帰無仮説「個別効果はない」は棄却される
 
 #GLS推定（変量効果推定）
-result3 = plm(home_death ~ elderly_ratio + per_capita_taxable_income + shienbyo_ratio + shienshin_ratio + nursing_station, data=data_refine, model="random")
+result3 = plm(home_death ~ elderly_ratio + per_capita_taxable_income + shienshin_ratio + nursing_station, data=data_refine, model="random")
 summary(result3)
 #行列式の計算がうまくいっていない
 #逆行列が求まらないから？
