@@ -101,7 +101,6 @@ year2017 <- data$year2017
 # データから全市町村のコードを抽出
 all_city_code <- data[, 3]
 all_city_code <- unique(all_city_code)
-write(all_city_code, file = "all_city_code.txt")
 
 # 全市町村のコードの総数1742
 length(all_city_code)
@@ -116,12 +115,12 @@ match_code <- c()
 
 # データから大都市圏・都市圏の市町村を抽出
 for (i in 1:length(toshiken_num_fix)) {
-	for (j in 1:length(all_city_code)) {
-		if (all_city_code[j] == toshiken_num_fix[i]) {
-			# 一致したコードをリストに追加
-			match_code <- c(match_code, c(all_city_code[j]))		
-		}
-	}
+  for (j in 1:length(all_city_code)) {
+    if (all_city_code[j] == toshiken_num_fix[i]) {
+      # 一致したコードをリストに追加
+      match_code <- c(match_code, c(all_city_code[j]))		
+    }
+  }
 }
 
 # match_code重複なくす673
@@ -134,47 +133,62 @@ match_code_less <- c()
 # 5桁589
 match_code_more <- c()
 for (i in 1:length(match_code)) {
-	if (match_code[i] < 10000) {
-		match_code_less <- c(match_code_less, c(match_code[i]))
-	} else if (match_code[i] >= 10000) {
-		match_code_more <- c(match_code_more, c(match_code[i]))
-	}
+  if (match_code[i] < 10000) {
+    match_code_less <- c(match_code_less, c(match_code[i]))
+  } else if (match_code[i] >= 10000) {
+    match_code_more <- c(match_code_more, c(match_code[i]))
+  }
+}
+
+# 大都市圏・都市圏以外の市町村コード
+shuhentoshi <- setdiff(all_city_code, match_code)
+
+# match_codeを４桁と５桁で分ける
+# 4桁
+shuhentoshi_less <- c()
+# 5桁
+shuhentoshi_more <- c()
+for (i in 1:length(shuhentoshi)) {
+  if (shuhentoshi[i] < 10000) {
+    shuhentoshi_less <- c(shuhentoshi_less, c(shuhentoshi[i]))
+  } else if (shuhentoshi[i] >= 10000) {
+    shuhentoshi_more <- c(shuhentoshi_more, c(shuhentoshi[i]))
+  }
 }
 
 # 空のリスト（行番号格納）
 row_num_list <- c()
 
-# 大都市圏・都市圏の行番号取得
+# 大都市圏・都市圏以外のの行番号取得
 # ここがうまくいかない　複数年取り出せない
 # grepだと４桁コードが５桁のものと重複する可能性
 # ４桁コードの先頭に０をつけるpaste()で文字列０を結合→allもtoshikenも文字列として扱ってrow_num(int)導出
 
 # うまくいかないので、４桁と５桁のコードそれぞれ変数に格納して区別して操作する
-# city_code=match_codeの条件文にする
-for (i in 1:length(match_code_less)) {
-	for (j in 1:length(data$city_code)) {
-		# ４桁文字数で測る
-		# ここを変える
-		if (match_code_less[i] == data$city_code[j]) {
-			# 行番号取得
-			row_num <- grep(match_code_less[i], data$city_code)
-	　　　　　# リストに格納
-			row_num_list <- c(row_num_list, c(row_num))
-		}	
-	}	
+for (i in 1:length(shuhentoshi_less)) {
+  for (j in 1:length(data$city_code)) {
+    # ４桁文字数で測る
+    # ここを変える
+    if (shuhentoshi_less[i] == data$city_code[j]) {
+      # 行番号取得
+      row_num <- grep(shuhentoshi_less[i], data$city_code)
+      # リストに格納
+      row_num_list <- c(row_num_list, c(row_num))
+    }	
+  }	
 }
 
 
-for (i in 1:length(match_code_more)) {
-	for (j in 1:length(data$city_code)) {
-		# 5桁文字数で測る
-		if (match_code_more[i] == data$city_code[j]) {
-			# 行番号取得
-			row_num <- grep(match_code_more[i], data$city_code)
-	　　　　　# リストに格納
-			row_num_list <- c(row_num_list, c(row_num))
-		}	
-	}	
+for (i in 1:length(shuhentoshi_more)) {
+  for (j in 1:length(data$city_code)) {
+    # 5桁文字数で測る
+    if (shuhentoshi_more[i] == data$city_code[j]) {
+      # 行番号取得
+      row_num <- grep(shuhentoshi_more[i], data$city_code)
+      # リストに格納
+      row_num_list <- c(row_num_list, c(row_num))
+    }	
+  }	
 }
 
 
@@ -199,9 +213,9 @@ data <- data[, -4:-6]
 
 # 大都市圏・都市圏の市町村のみのデータにする
 for (i in 1:length(row_num_list)) {
-			# 空のデータセットに一致する行を格納していく
-			slice_data <- slice(data, row_num_list[i])
-			data_toshiken <- rbind(data_toshiken, slice_data)
+  # 空のデータセットに一致する行を格納していく
+  slice_data <- slice(data, row_num_list[i])
+  data_toshiken <- rbind(data_toshiken, slice_data)
 }
 
 # 重複はなくさない（パネルデータ）
@@ -236,20 +250,20 @@ summary(data_toshiken, na.rm = TRUE)
 length(data_toshiken[,1])
 length(data_toshiken[,3])
 for (i in 4:18) {
-	col_name <- colnames(data_toshiken)[i]
-	object_num <- length(data_toshiken[[i]])
-	print(col_name)
-	print(object_num)
+  col_name <- colnames(data_toshiken)[i]
+  object_num <- length(data_toshiken[[i]])
+  print(col_name)
+  print(object_num)
 }
 
 #　標準偏差
 sd(data_toshiken[,1])
 sd(data_toshiken[,3])
 for (i in 4:18) {
-	col_name <- colnames(data_toshiken)[i]
-	sd <- sd(data_toshiken[[i]])
-	print(col_name)
-	print(sd)
+  col_name <- colnames(data_toshiken)[i]
+  sd <- sd(data_toshiken[[i]])
+  print(col_name)
+  print(sd)
 }
 
 # 被説明変数と説明変数
@@ -273,7 +287,7 @@ round(vif.res)
 # pooledOLS
 # パネルデータと認識させる
 data_refine <- pdata.frame(data_toshiken, index=c("city_code", "year"), drop.index=TRUE)
-result1 = plm(home_death ~ elderly_ratio + per_capita_taxable_income + shienbyo_ratio + shienshin_ratio + nursing_station_ratio + year2015 + year2016 + year2017, data=data_refine, model="pooling")
+result1 = plm(home_death ~ elderly_ratio + per_capita_taxable_income + shienshin_ratio + nursing_station_ratio + year2015 + year2016 + year2017, data=data_refine, model="pooling")
 summary(result1)
 
 #LSDV推定（within推定、固定効果推定）
@@ -285,7 +299,7 @@ pFtest(result2, result1)
 #p値は非常に小さいので帰無仮説「個別効果はない」は棄却される
 
 #GLS推定（変量効果推定）
-result3 = plm(home_death ~ elderly_ratio + per_capita_taxable_income + shienbyo_ratio + shienshin_ratio + nursing_station, data=data_refine, model="random")
+result3 = plm(home_death ~ elderly_ratio + per_capita_taxable_income + shienshin_ratio + nursing_station, data=data_refine, model="random")
 summary(result3)
 #行列式の計算がうまくいっていない
 #逆行列が求まらないから？
@@ -298,4 +312,4 @@ summary(result4)
 
 #yearダミーなしLSDV(result4)とresult3でハウスマン検定
 phtest(result4, result3)
-#有意水準p<0.05とすると、この結果は統計的に有意ではない。帰無仮説は棄却されない→変量効果推定は問題ない
+#有意水準p<0.05とすると、この結果は統計的に有意。帰無仮説は棄却→固定効果推定を採用
