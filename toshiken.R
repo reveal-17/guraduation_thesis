@@ -101,7 +101,6 @@ year2017 <- data$year2017
 # データから全市町村のコードを抽出
 all_city_code <- data[, 3]
 all_city_code <- unique(all_city_code)
-write(all_city_code, file = "all_city_code.txt")
 
 # 全市町村のコードの総数1742
 length(all_city_code)
@@ -126,7 +125,6 @@ for (i in 1:length(toshiken_num_fix)) {
 
 # match_code重複なくす673
 match_code <- unique(match_code)
-write(match_code, file = "match_code.txt")
 
 # match_codeを４桁と５桁で分ける
 # 4桁84

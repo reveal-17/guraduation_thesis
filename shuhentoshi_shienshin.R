@@ -125,7 +125,6 @@ for (i in 1:length(toshiken_num_fix)) {
 
 # match_code重複なくす673
 match_code <- unique(match_code)
-write(match_code, file = "match_code.txt")
 
 # match_codeを４桁と５桁で分ける
 # 4桁84
