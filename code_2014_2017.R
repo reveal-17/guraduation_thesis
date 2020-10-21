@@ -4,6 +4,9 @@
 library(openxlsx)
 library(plm)
 
+# クラス読み込み
+source("class.R")
+
 #　作業ディレクトリに移動
 setwd('/Users/miyazakishuhei/Desktop/graduation_thesis')
 
@@ -13,6 +16,26 @@ data <- read.xlsx('home_death.xlsx', sheet="R_robast_check")
 # データが正しく読み込めていることを確認
 head(data)
 
+#欠損値はほんとうにランダムなのか？
+#基本統計量（自宅死割合に欠損値が含まれないもの）
+summary(data, na.rm = TRUE)
+#基本統計量表示（自宅死割合に欠損値が含まれるもの）
+data_drop <- subset(data, is.na(data$home_death))
+summary(data_drop)
+
+#　基本統計量表示
+summary(data, na.rm = TRUE)
+# 欠損値の有無
+table(is.na(data))
+# 欠損値の状況確認
+data[!complete.cases(data),]
+# 欠損値対処（自宅死割合）
+data <- na.omit(data)
+# 欠損値がないことを確認
+table(is.na(data))
+# 欠損値の状況確認
+data[!complete.cases(data),]
+
 #　基本統計量表示
 summary(data, na.rm = TRUE)
 
@@ -21,20 +44,6 @@ table(is.na(data))
 
 # 欠損値の状況確認
 data[!complete.cases(data),]
-
-#欠損値はほんとうにランダムなのか？
-#基本統計量（自宅死割合に欠損値が含まれないもの）
-summary(data, na.rm = TRUE)
-#基本統計量表示（自宅死割合に欠損値が含まれるもの）
-data_drop <- subset(data, is.na(data$home_death))
-summary(data_drop)
-
-# 要素数確認
-table(data$year)
-table(data$home_death)
-nrow(data)
-length(data$year)
-length(data$home_death)
 
 # 欠損値対処（自宅死割合）
 data <- na.omit(data)
@@ -72,15 +81,6 @@ data$year2017 <- ifelse(data$year==2017, 1, 0)
 year2015 <- data$year2015
 year2016 <- data$year2016
 year2017 <- data$year2017
-
-# 対数変換
-# home_death_log <- log(home_death)
-# nursing_station_ratio_log <- log(nursing_station_ratio)
-# shienshin_ratio_log <- log(shienshin_ratio)
-# shienbyo_ratio_log <- log(shienbyo_ratio)
-# per_capita_taxable_income_log <- log(per_capita_taxable_income)
-# elderly_ratio_log <- log(elderly_ratio)
-# table(shienbyo_ratio_log)
 
 #　基本統計量表示
 summary(data, na.rm = TRUE)
@@ -129,6 +129,16 @@ data_refine <- pdata.frame(data, index=c("city_code", "year"), drop.index=TRUE)
 result1 = plm(home_death ~ elderly_ratio + per_capita_taxable_income + shienbyo_ratio + shienshin_ratio + nursing_station_ratio + year2015 + year2016 + year2017, data=data_refine, model="pooling")
 summary(result1)
 
+# 前2年と後2年で分けて分析
+data_before <- subset(data, year <= 2015)
+data_after <- subset(data, year >= 2016)
+data_before_refine <- pdata.frame(data_before, index=c("city_code", "year"), drop.index=TRUE)
+data_after_refine <- pdata.frame(data_after, index=c("city_code", "year"), drop.index=TRUE)
+result1_before = plm(home_death ~ elderly_ratio + per_capita_taxable_income + shienbyo_ratio + shienshin_ratio + nursing_station_ratio + year2015 + year2016 + year2017, data=data_before_refine, model="pooling")
+result1_after = plm(home_death ~ elderly_ratio + per_capita_taxable_income + shienbyo_ratio + shienshin_ratio + nursing_station_ratio + year2015 + year2016 + year2017, data=data_after_refine, model="pooling")
+summary(result1_before)
+summary(result1_after)
+
 # 交差項入りも分析
 data_refine <- pdata.frame(data, index=c("city_code", "year"), drop.index=TRUE)
 result1 = plm(home_death ~ elderly_ratio + per_capita_taxable_income + shienbyo_ratio + shienshin_ratio + nursing_station + per_capita_taxable_income*shienbyo_ratio + year2015 + year2016 + year2017, data=data_refine, model="pooling")
@@ -137,6 +147,12 @@ summary(result9)
 #LSDV推定（within推定、固定効果推定）
 result2 <- update(result1, model="within")
 summary(result2)
+
+# 前2年と後2年で分けて分析
+result2_before <- update(result1_before, model="within")
+result2_after <- update(result1_after, model="within")
+summary(result2_before)
+summary(result2_after)
 
 #F検定
 pFtest(result2, result1)
