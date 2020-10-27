@@ -142,6 +142,8 @@ for (i in 1:length(match_code)) {
 # 大都市圏・都市圏以外の市町村コード
 shuhentoshi <- setdiff(all_city_code, match_code)
 
+length(shuhentoshi)
+
 # match_codeを４桁と５桁で分ける
 # 4桁
 shuhentoshi_less <- c()
@@ -210,7 +212,7 @@ colnames(data_toshiken) <- c("year", "prefecture_code", "city_code", "population
 head(data)
 data <- data[, -4:-6]
 
-# 大都市圏・都市圏の市町村のみのデータにする
+# 大都市圏・都市圏以外市町村のみのデータにする
 for (i in 1:length(row_num_list)) {
   # 空のデータセットに一致する行を格納していく
   slice_data <- slice(data, row_num_list[i])
@@ -240,7 +242,7 @@ data <- na.omit(data_toshiken)
 table(is.na(data_toshiken))
 
 # 欠損値の状況再確認
-data[!complete.cases(data),]
+data[!complete.cases(data_toshiken),]
 
 #　基本統計量表示
 summary(data_toshiken, na.rm = TRUE)
@@ -312,3 +314,6 @@ summary(result4)
 #yearダミーなしLSDV(result4)とresult3でハウスマン検定
 phtest(result4, result3)
 #有意水準p<0.05とすると、この結果は統計的に有意。帰無仮説は棄却→固定効果推定を採用
+
+# 大都市圏・都市圏の市町村のみのデータを出力
+write.xlsx(data_toshiken, "shuhentoshi_R.xlsx")

@@ -125,6 +125,7 @@ for (i in 1:length(toshiken_num_fix)) {
 
 # match_code重複なくす673
 match_code <- unique(match_code)
+length(match_code)
 
 # match_codeを４桁と５桁で分ける
 # 4桁84
@@ -297,3 +298,6 @@ summary(result4)
 #yearダミーなしLSDV(result4)とresult3でハウスマン検定
 phtest(result4, result3)
 #有意水準p<0.05とすると、この結果は統計的に有意ではない。帰無仮説は棄却されない→変量効果推定は問題ない
+
+# 大都市圏・都市圏の市町村のみのデータを出力
+write.xlsx(data_toshiken, "toshiken_R.xlsx")
