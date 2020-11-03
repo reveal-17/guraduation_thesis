@@ -44,7 +44,7 @@ toshiken_num_fix <- as.integer(toshiken_num_fix)
 # データの準備=======================================================================================
 
 # データ読み込み
-data <- read.xlsx('home_death.xlsx', sheet="R_robast_check")
+data <- read.xlsx('home_death.xlsx', sheet="R_elderly")
 
 # データが正しく読み込めていることを確認
 head(data)

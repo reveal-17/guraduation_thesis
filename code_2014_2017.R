@@ -11,7 +11,7 @@ source("class.R")
 setwd('/Users/miyazakishuhei/Desktop/graduation_thesis')
 
 # データ読み込み
-data <- read.xlsx('home_death.xlsx', sheet="R_robast_check")
+data <- read.xlsx('home_death.xlsx', sheet="R_elderly")
 
 # データが正しく読み込めていることを確認
 head(data)
@@ -130,19 +130,19 @@ result1 = plm(home_death ~ elderly_ratio + per_capita_taxable_income + shienbyo_
 summary(result1)
 
 # 前2年と後2年で分けて分析
-data_before <- subset(data, year <= 2015)
-data_after <- subset(data, year >= 2016)
-data_before_refine <- pdata.frame(data_before, index=c("city_code", "year"), drop.index=TRUE)
-data_after_refine <- pdata.frame(data_after, index=c("city_code", "year"), drop.index=TRUE)
-result1_before = plm(home_death ~ elderly_ratio + per_capita_taxable_income + shienbyo_ratio + shienshin_ratio + nursing_station_ratio + year2015 + year2016 + year2017, data=data_before_refine, model="pooling")
-result1_after = plm(home_death ~ elderly_ratio + per_capita_taxable_income + shienbyo_ratio + shienshin_ratio + nursing_station_ratio + year2015 + year2016 + year2017, data=data_after_refine, model="pooling")
-summary(result1_before)
-summary(result1_after)
+#data_before <- subset(data, year <= 2015)
+#data_after <- subset(data, year >= 2016)
+#data_before_refine <- pdata.frame(data_before, index=c("city_code", "year"), drop.index=TRUE)
+#data_after_refine <- pdata.frame(data_after, index=c("city_code", "year"), drop.index=TRUE)
+#result1_before = plm(home_death ~ elderly_ratio + per_capita_taxable_income + shienbyo_ratio + shienshin_ratio + nursing_station_ratio + year2015 + year2016 + year2017, data=data_before_refine, model="pooling")
+#result1_after = plm(home_death ~ elderly_ratio + per_capita_taxable_income + shienbyo_ratio + shienshin_ratio + nursing_station_ratio + year2015 + year2016 + year2017, data=data_after_refine, model="pooling")
+#summary(result1_before)
+#summary(result1_after)
 
 # 交差項入りも分析
-data_refine <- pdata.frame(data, index=c("city_code", "year"), drop.index=TRUE)
-result1 = plm(home_death ~ elderly_ratio + per_capita_taxable_income + shienbyo_ratio + shienshin_ratio + nursing_station + per_capita_taxable_income*shienbyo_ratio + year2015 + year2016 + year2017, data=data_refine, model="pooling")
-summary(result9)
+# data_refine <- pdata.frame(data, index=c("city_code", "year"), drop.index=TRUE)
+# result1 = plm(home_death ~ elderly_ratio + per_capita_taxable_income + shienbyo_ratio + shienshin_ratio + nursing_station + per_capita_taxable_income*shienbyo_ratio + year2015 + year2016 + year2017, data=data_refine, model="pooling")
+# summary(result9)
 
 #LSDV推定（within推定、固定効果推定）
 result2 <- update(result1, model="within")
