@@ -279,6 +279,15 @@ summary(result1)
 result2 <- update(result1, model="within")
 summary(result2)
 
+#個別効果の推定値
+mu = fixef(result2)
+summary(mu)
+#個別効果の平均値
+mean(mu)
+#個別効果の平均からの乖離
+mu2 = fixef(result2, type="dmean")
+summary(mu2)
+
 #F検定
 pFtest(result2, result1)
 #p値は非常に小さいので帰無仮説「個別効果はない」は棄却される

@@ -16,12 +16,70 @@ data <- read.xlsx('home_death.xlsx', sheet="R_elderly")
 # データが正しく読み込めていることを確認
 head(data)
 
-#欠損値はほんとうにランダムなのか？
-#基本統計量（自宅死割合に欠損値が含まれないもの）
+#　欠損値はほんとうにランダムなのか？
+#　基本統計量（自宅死割合に欠損値が含まれないもの）
 summary(data, na.rm = TRUE)
-#基本統計量表示（自宅死割合に欠損値が含まれるもの）
+#　基本統計量表示（自宅死割合に欠損値が含まれるもの）
 data_drop <- subset(data, is.na(data$home_death))
 summary(data_drop)
+
+# 自宅死割合に欠損値が生じた都道府県をヒストグラムで可視化
+hist(data_drop$prefecture_code, breaks=seq(1, 47), xlab="prefecture_code", labels=TRUE, main="missing value of prefecture code", col="orange")
+# x軸名が命名できず（xlabでできるはずだが...）
+
+# 箱ひげ図を比較
+# 65歳以上割合
+boxplot(data$elderly_ratio, boxwex=0.25, at=1:1-0.2, main="elderly_ratio", col="yellow")
+boxplot(data_drop$elderly_ratio, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
+legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
+
+# 課税所得
+boxplot(data$taxable_income, boxwex=0.25, at=1:1-0.2, main="taxable_income", col="yellow")
+boxplot(data_drop$taxable_income, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
+legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
+
+# 人口
+boxplot(data$population, boxwex=0.25, at=1:1-0.2, main="population", col="yellow")
+boxplot(data_drop$population, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
+legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
+
+# 人口（外れ値なし）
+boxplot(data$population, outline=FALSE, boxwex=0.25, at=1:1-0.2, main="population(outline=FALSE)", col="yellow")
+boxplot(data_drop$population, outline=FALSE, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
+legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
+
+# 一人あたり課税所得
+boxplot(data$per_capita_taxable_income, boxwex=0.25, at=1:1-0.2, main="per_capita_taxable_income", col="yellow")
+boxplot(data$per_capita_taxable_income, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
+legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
+
+# 人口一人あたり在宅療養支援病院数
+boxplot(data$shienbyo_ratio, boxwex=0.25, at=1:1-0.2, main="shienbyo_ratio", col="yellow")
+boxplot(data_drop$shienbyo_ratio, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
+legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
+
+# 在宅療養支援病院数
+boxplot(data$shienbyo, boxwex=0.25, at=1:1-0.2, main="shienbyo", col="yellow")
+boxplot(data_drop$shienbyo, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
+legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
+
+# 人口一人あたり在宅療養支援診療所数
+boxplot(data$shienshin_ratio, boxwex=0.25, at=1:1-0.2, main="shienshin_ratio", col="yellow")
+boxplot(data_drop$shienshin_ratio, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
+legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
+
+# 在宅療養支援診療所数
+boxplot(data$shienshin, boxwex=0.25, at=1:1-0.2, main="shienshin", col="yellow")
+boxplot(data_drop$shienshin, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
+legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
+
+# 在宅療養支援診療所数（外れ値なし）
+boxplot(data$shienshin, outline=FALSE, boxwex=0.25, at=1:1-0.2, main="shienshin(outline=FALSE)", col="yellow")
+boxplot(data_drop$shienshin, outline=FALSE, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
+legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
+
+# 訪問看護ステーション
+
 
 #　基本統計量表示
 summary(data, na.rm = TRUE)
@@ -148,11 +206,20 @@ summary(result1)
 result2 <- update(result1, model="within")
 summary(result2)
 
+#個別効果の推定値
+mu = fixef(result2)
+summary(mu)
+#個別効果の平均値
+mean(mu)
+#個別効果の平均からの乖離
+mu2 = fixef(result2, type="dmean")
+summary(mu2)
+
 # 前2年と後2年で分けて分析
-result2_before <- update(result1_before, model="within")
-result2_after <- update(result1_after, model="within")
-summary(result2_before)
-summary(result2_after)
+#result2_before <- update(result1_before, model="within")
+#result2_after <- update(result1_after, model="within")
+#summary(result2_before)
+#summary(result2_after)
 
 #F検定
 pFtest(result2, result1)
