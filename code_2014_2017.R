@@ -23,6 +23,29 @@ summary(data, na.rm = TRUE)
 data_drop <- subset(data, is.na(data$home_death))
 summary(data_drop)
 
+head(data_drop)
+
+# オブジェクト数
+length(data_drop[,1])
+length(data_drop[,3])
+for (i in 4:18) {
+  col_name <- colnames(data_drop)[i]
+  object_num <- length(data_drop[[i]])
+  print(col_name)
+  print(object_num)
+}
+
+#　標準偏差
+sd(data_drop[,1])
+sd(data_drop[,3])
+for (i in 4:18) {
+  col_name <- colnames(data_drop)[i]
+  sd <- sd(data_drop[[i]])
+  print(col_name)
+  print(sd)
+}
+
+
 # 自宅死割合に欠損値が生じた都道府県をヒストグラムで可視化
 hist(data_drop$prefecture_code, breaks=seq(1, 47), xlab="prefecture_code", labels=TRUE, main="missing value of prefecture code", col="orange")
 # x軸名が命名できず（xlabでできるはずだが...）
@@ -30,6 +53,11 @@ hist(data_drop$prefecture_code, breaks=seq(1, 47), xlab="prefecture_code", label
 # 箱ひげ図を比較
 # 65歳以上割合
 boxplot(data$elderly_ratio, boxwex=0.25, at=1:1-0.2, main="elderly_ratio", col="yellow")
+boxplot(data_drop$elderly_ratio, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
+legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
+
+# 65歳以上割合（外れ値なし）
+boxplot(data$elderly_ratio, outline=FALSE, boxwex=0.25, at=1:1-0.2, main="elderly_ratio", col="yellow")
 boxplot(data_drop$elderly_ratio, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
 legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
 
@@ -44,7 +72,7 @@ boxplot(data_drop$population, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
 legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
 
 # 人口（外れ値なし）
-boxplot(data$population, outline=FALSE, boxwex=0.25, at=1:1-0.2, main="population(outline=FALSE)", col="yellow")
+boxplot(data$population, outline=FALSE, boxwex=0.25, at=1:1-0.2, main="population", col="yellow")
 boxplot(data_drop$population, outline=FALSE, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
 legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
 
@@ -53,8 +81,18 @@ boxplot(data$per_capita_taxable_income, boxwex=0.25, at=1:1-0.2, main="per_capit
 boxplot(data$per_capita_taxable_income, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
 legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
 
-# 人口一人あたり在宅療養支援病院数
+# 一人あたり課税所得（外れ値）
+boxplot(data$per_capita_taxable_income, outline=FALSE, boxwex=0.25, at=1:1-0.2, main="per_capita_taxable_income", col="yellow")
+boxplot(data$per_capita_taxable_income, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
+legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
+
+# 高齢者人口一万人あたり在宅療養支援病院数
 boxplot(data$shienbyo_ratio, boxwex=0.25, at=1:1-0.2, main="shienbyo_ratio", col="yellow")
+boxplot(data_drop$shienbyo_ratio, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
+legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
+
+# 高齢者人口一万人あたり在宅療養支援病院数（外れ値なし）
+boxplot(data$shienbyo_ratio, outline=FALSE, boxwex=0.25, at=1:1-0.2, main="shienbyo_ratio", col="yellow")
 boxplot(data_drop$shienbyo_ratio, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
 legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
 
@@ -63,8 +101,18 @@ boxplot(data$shienbyo, boxwex=0.25, at=1:1-0.2, main="shienbyo", col="yellow")
 boxplot(data_drop$shienbyo, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
 legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
 
-# 人口一人あたり在宅療養支援診療所数
+# 在宅療養支援病院数（外れ値なし）
+boxplot(data$shienbyo, outline=FALSE, boxwex=0.25, at=1:1-0.2, main="shienbyo", col="yellow")
+boxplot(data_drop$shienbyo, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
+legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
+
+# 高齢者人口一万人あたり在宅療養支援診療所数
 boxplot(data$shienshin_ratio, boxwex=0.25, at=1:1-0.2, main="shienshin_ratio", col="yellow")
+boxplot(data_drop$shienshin_ratio, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
+legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
+
+# 高齢者人口一万人あたり在宅療養支援診療所数（外れ値なし）
+boxplot(data$shienshin_ratio, outline=FALSE, boxwex=0.25, at=1:1-0.2, main="shienshin_ratio", col="yellow")
 boxplot(data_drop$shienshin_ratio, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
 legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
 
@@ -74,11 +122,19 @@ boxplot(data_drop$shienshin, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
 legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
 
 # 在宅療養支援診療所数（外れ値なし）
-boxplot(data$shienshin, outline=FALSE, boxwex=0.25, at=1:1-0.2, main="shienshin(outline=FALSE)", col="yellow")
+boxplot(data$shienshin, outline=FALSE, boxwex=0.25, at=1:1-0.2, main="shienshin", col="yellow")
 boxplot(data_drop$shienshin, outline=FALSE, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
 legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
 
-# 訪問看護ステーション
+# 訪問看護ステーション（外れ値なし）
+boxplot(data$nursing_station, outline=FALSE, boxwex=0.25, at=1:1-0.2, main="nursing_station", col="yellow")
+boxplot(data_drop$nursing_station, outline=FALSE, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
+legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
+
+# 高齢者人口1万人あたりの訪問看護ステーション（外れ値なし）
+boxplot(data$nursing_station_ratio, outline=FALSE, boxwex=0.25, at=1:1-0.2, main="nursing_station_ratio", col="yellow")
+boxplot(data_drop$nursing_station_ratio, outline=FALSE, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
+legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
 
 
 #　基本統計量表示
@@ -226,7 +282,7 @@ pFtest(result2, result1)
 #p値は非常に小さいので帰無仮説「個別効果はない」は棄却される
 
 #GLS推定（変量効果推定）
-result3 = plm(home_death ~ elderly_ratio + per_capita_taxable_income + shienbyo_ratio + shienshin_ratio + nursing_station, data=data_refine, model="random")
+result3 = plm(home_death ~ elderly_ratio + per_capita_taxable_income + shienbyo_ratio + shienshin_ratio + nursing_station　+ year2015 + year2016 + year2017, data=data_refine, model="random")
 summary(result3)
 #行列式の計算がうまくいっていない
 #逆行列が求まらないから？
@@ -238,6 +294,6 @@ result4 <- update(result3, model="within")
 summary(result4)
 
 #yearダミーなしLSDV(result4)とresult3でハウスマン検定
-phtest(result4, result3)
+phtest(result2, result3)
 #p値は極めて小さいので帰無仮説は棄却される→F検定で帰無仮説を棄却していれば固定効果での推定へ
 
