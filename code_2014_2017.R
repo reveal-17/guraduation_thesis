@@ -45,12 +45,14 @@ for (i in 4:18) {
   print(sd)
 }
 
+write.xlsx(data_drop, "drop_R.xlsx")
 
 # 自宅死割合に欠損値が生じた都道府県をヒストグラムで可視化
 hist(data_drop$prefecture_code, breaks=seq(1, 47), xlab="prefecture_code", labels=TRUE, main="missing value of prefecture code", col="orange")
 # x軸名が命名できず（xlabでできるはずだが...）
 
 # 箱ひげ図を比較
+
 # 65歳以上割合
 boxplot(data$elderly_ratio, boxwex=0.25, at=1:1-0.2, main="elderly_ratio", col="yellow")
 boxplot(data_drop$elderly_ratio, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
@@ -83,7 +85,7 @@ legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
 
 # 一人あたり課税所得（外れ値）
 boxplot(data$per_capita_taxable_income, outline=FALSE, boxwex=0.25, at=1:1-0.2, main="per_capita_taxable_income", col="yellow")
-boxplot(data$per_capita_taxable_income, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
+boxplot(data$per_capita_taxable_income, outline=FALSE, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
 legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
 
 # 高齢者人口一万人あたり在宅療養支援病院数
@@ -113,7 +115,7 @@ legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
 
 # 高齢者人口一万人あたり在宅療養支援診療所数（外れ値なし）
 boxplot(data$shienshin_ratio, outline=FALSE, boxwex=0.25, at=1:1-0.2, main="shienshin_ratio", col="yellow")
-boxplot(data_drop$shienshin_ratio, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
+boxplot(data_drop$shienshin_ratio, outline=FALSE, boxwex=0.25, at=1:1+0.2, add=TRUE, col="orange")
 legend("topleft", c("values", "missing values"), fill=c("yellow", "orange"))
 
 # 在宅療養支援診療所数
